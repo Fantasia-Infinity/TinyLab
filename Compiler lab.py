@@ -93,7 +93,7 @@ def lis_to_args(lis):
         return lis[0]+","+lis_to_args(lis[1:])
 
 def comp_lambda(ir):
-    return "function"+"("+lis_to_args(ir[1])+")"+"{return "+compilee(ir[2])+";}"
+    return "("+"("+lis_to_args(ir[1])+")"+"=>"+"("+lis_to_args(map(compilee,ir[2:]))+")"+")"
 def comp_application(ir):
     return ir[0]+"("+lis_to_args(map(compilee,ir[1:]))+")"
 def comp_definition(ir):
@@ -103,6 +103,23 @@ def comp_definition(ir):
         return "var "+ir[1]+"="+compilee(ir[2])+";"
     elif(type(ir[1])==list):
         return "var "+ir[1][0]+"="+compilee(make_lambda(ir[1],ir[2]))+";"
+def comp_if(ir):
+    return "("+compilee(ir[1])+")?"+compilee(ir[2])+":"+compilee(ir[3])
+def comp_cond(ir):
+    condlist=ir[1:]
+    def comp_condlist(cl):
+        if cl[0][0]=="else":
+            return compilee(cl[0][1])
+        else:
+            return "("+compilee(cl[0][0])+")?"+compilee(cl[0][1])+":"+comp_condlist(cl[1:])
+    return comp_condlist(condlist)
+def comp_begin(ir):
+    ret=""
+    for item in ir[1:]:
+        ret+=compilee(item)+";"
+    return ret
+def comp_setq(ir):
+    return "var "+ir[1]+"="+compilee(ir[2])+";"
 def compilee(ir):
     if(is_self_eval(ir)):
         return comp_self(ir)
@@ -113,7 +130,7 @@ def compilee(ir):
     elif(is_variable(ir)):
         return comp_variable(ir)
     elif(is_begin(ir)):
-        return eval_begin(ir)
+        return comp_begin(ir)
     elif(is_if(ir)):
         return comp_if(ir)
     elif(is_cond(ir)):
@@ -129,6 +146,18 @@ def compilee(ir):
     elif(is_application(ir)):
         return comp_application(ir)
 def compiler(exp):
-    return compilee(parser(token(exp)))
-
-    
+    return compilee(parser(token(exp)))    
+print "var add=function(x,y){return x+y;};"
+print "var sub=function(x,y){return x-y;};"
+print "var mul=function(x,y){return x*y;};"
+print "var div=function(x,y){return x/y;};"
+print "var eq=function(x,y){return x==y;};"
+print compiler("(define (fac x) (if (eq x 0) 1 (mul x (fac (sub x 1)))))")
+print compiler("(define (acc x) (cond ((eq x 0) 0) (else (add x (acc (sub x 1))))))")   
+print compiler("(define (what x) (cond ((eq x 1) 1) ((eq x 2) 2) (else 3)))")
+print compiler("(begin 1 2 3 4 (add 1 2))")
+print compiler("(define x 1)")
+print compiler("(set! x (sub x 1))")
+print compiler("(define (cons x y) (lambda (m) (m x y)))")
+print compiler("(define (car z) (z (lambda (p q) p)))")
+print compiler("(define (cdr z) (z (lambda (p q) q)))")
