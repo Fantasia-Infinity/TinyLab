@@ -83,7 +83,7 @@ def is_begin(ir):
 def comp_self(ir):
     return ir
 def comp_variable(ir):
-    return ir[0]
+    return ir
 def lis_to_args(lis):
     if lis==[]:
         return ""
@@ -95,7 +95,7 @@ def lis_to_args(lis):
 def comp_lambda(ir):
     return "("+"("+lis_to_args(ir[1])+")"+"=>"+"("+lis_to_args(map(compilee,ir[2:]))+")"+")"
 def comp_application(ir):
-    return ir[0]+"("+lis_to_args(map(compilee,ir[1:]))+")"
+    return compilee(ir[0])+"("+lis_to_args(map(compilee,ir[1:]))+")"
 def comp_definition(ir):
     def make_lambda(s,body):
         return ['lambda',s[1:],body]
@@ -161,6 +161,9 @@ print compiler("(define (what x) (cond ((eq x 1) 1) ((eq x 2) 2) (else 3)))")
 print compiler("(begin 1 2 3 4 (add 1 2))")
 print compiler("(define x 1)")
 print compiler("(set! x (sub x 1))")
+print compiler("((lambda (x) (add x 1)) 9)")
+print compiler("(define (tas das x y) (das x y)) ")
+print compiler("(tas add 1 1)")
 #print compiler("(define (cons x y) (lambda (m) (m x y)))")
 #print compiler("(define (car z) (z (lambda (p q) p)))")
 #print compiler("(define (cdr z) (z (lambda (p q) q)))")
