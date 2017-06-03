@@ -152,12 +152,15 @@ print "var sub=function(x,y){return x-y;};"
 print "var mul=function(x,y){return x*y;};"
 print "var div=function(x,y){return x/y;};"
 print "var eq=function(x,y){return x==y;};"
+print 'var cons=function(x,y){return {car:x,cdr:y}};'
+print 'var car=function(tuple){return tuple.car;};'
+print 'var cdr=function(tuple){return tuple.cdr;};'
 print compiler("(define (fac x) (if (eq x 0) 1 (mul x (fac (sub x 1)))))")
 print compiler("(define (acc x) (cond ((eq x 0) 0) (else (add x (acc (sub x 1))))))")   
 print compiler("(define (what x) (cond ((eq x 1) 1) ((eq x 2) 2) (else 3)))")
 print compiler("(begin 1 2 3 4 (add 1 2))")
 print compiler("(define x 1)")
 print compiler("(set! x (sub x 1))")
-print compiler("(define (cons x y) (lambda (m) (m x y)))")
-print compiler("(define (car z) (z (lambda (p q) p)))")
-print compiler("(define (cdr z) (z (lambda (p q) q)))")
+#print compiler("(define (cons x y) (lambda (m) (m x y)))")
+#print compiler("(define (car z) (z (lambda (p q) p)))")
+#print compiler("(define (cdr z) (z (lambda (p q) q)))")
