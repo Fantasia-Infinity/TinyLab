@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 08 14:16:00 2017
-
 @author: Fantasia
 """
 import random as rd
