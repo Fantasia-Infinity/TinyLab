@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 08 14:16:00 2017
+
 @author: Fantasia
 """
 import random as rd
@@ -31,7 +32,7 @@ class Ground:
     def randinit(self):
         for i in range(self.n):
             for j in range(self.n):
-                self.land[i][j]=Unit(rd.randint(1,30),0,0)
+                self.land[i][j]=Unit(30,0,0)
     def z(self,x,y):
         return x,y-1
     def y(self,x,y):
@@ -96,21 +97,21 @@ class Ground:
             totaldeltah=0
             for f in self.fl:
                 nx,ny=f(self,x,y)
-                if self.land[nx][ny].gethigh()>selfhigh:
-                    totaldeltah+=self.land[nx][ny].gethigh()-selfhigh
+                if self.land[nx][ny].gethigh()<selfhigh:
+                    totaldeltah+=selfhigh-self.land[nx][ny].gethigh()
                     count+=1
-            k=0.4
+            k=1
             totalflow=selfwater*k
             self.land[x][y].water-=totalflow
             for f in self.fl:
                 nx,ny=f(self,x,y)
-                if self.land[nx][ny].gethigh()>selfhigh:
-                    deltah=self.land[nx][ny].gethigh()-selfhigh
+                if self.land[nx][ny].gethigh()<selfhigh:
+                    deltah=selfhigh-self.land[nx][ny].gethigh()
                     self.land[nx][ny].water+=totalflow*(deltah/totaldeltah)
         def zhengfawater(self,x,y):
             t=self.land[x][y].temp
             sw=self.land[x][y].water
-            k=1
+            k=0.001
             gasup=sw*t*k
             waterdown=gasup
             self.land[x][y].gas+=gasup
@@ -119,7 +120,7 @@ class Ground:
         flowwater(self,x,y)
     def upper(self,x,y):
         self.upperwater(x,y)
-        self.uppergas(x,y)
+#        self.uppergas(x,y)
     def update(self):
         l1=range(self.n)
         l2=range(self.n)
@@ -138,10 +139,9 @@ YR=(200,100,200)
 GREY=(100,100,100)
 R=(255,255,0)
 ge=6
-n=100
+n=50
 g=Ground(n)
 g.randinit()
-g.land[5][5].water=1000
 def drawone(i,j,c):
     cnum=0
     if c.land[i][j].gethigh()>255:
@@ -158,15 +158,16 @@ while True:
         if event.type==pygame.QUIT:
             pygame.quit()
     g.update()
-    g.land[50][50].water=1000
+    g.land[25][15].water=10000000
     for i in range(n):
         for j in range(n):
             drawone(i,j,g)
     pygame.display.update()   
     
     
-    
-    
-#g=Ground(10)
-#g.randinit()
+#    
+#for i in range(10):
+#    g.land[15][15].water=1000000
+#    g.update()
+#    g.show()
 
