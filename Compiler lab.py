@@ -98,11 +98,11 @@ def comp_application(ir):
     return compilee(ir[0])+"("+lis_to_args(map(compilee,ir[1:]))+")"
 def comp_definition(ir):
     def make_lambda(s,body):
-        return ['lambda',s[1:],body]
+        return ['lambda',s[1:]]+body
     if(type(ir[1])==str):
         return "var "+ir[1]+"="+compilee(ir[2])+";"
     elif(type(ir[1])==list):
-        return "var "+ir[1][0]+"="+compilee(make_lambda(ir[1],ir[2]))+";"
+        return "var "+ir[1][0]+"="+compilee(make_lambda(ir[1],ir[2:]))+";"
 def comp_if(ir):
     return "("+compilee(ir[1])+")?"+compilee(ir[2])+":"+compilee(ir[3])
 def comp_cond(ir):
@@ -119,7 +119,7 @@ def comp_begin(ir):
         ret+=compilee(item)+";"
     return ret
 def comp_setq(ir):
-    return "var "+ir[1]+"="+compilee(ir[2])+";"
+    return ir[1]+"="+compilee(ir[2])
 def compilee(ir):
     if(is_self_eval(ir)):
         return comp_self(ir)
@@ -164,6 +164,5 @@ print compiler("(set! x (sub x 1))")
 print compiler("((lambda (x) (add x 1)) 9)")
 print compiler("(define (tas das x y) (das x y)) ")
 print compiler("(tas add 1 1)")
-#print compiler("(define (cons x y) (lambda (m) (m x y)))")
-#print compiler("(define (car z) (z (lambda (p q) p)))")
-#print compiler("(define (cdr z) (z (lambda (p q) q)))")
+print compiler("((lambda (x y) (set! x (add x 1)) (add x y)) 1 1)")
+print compiler("(define (tas x y) (set! x (add x 1)) (add x y))")
