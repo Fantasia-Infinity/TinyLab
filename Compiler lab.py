@@ -91,7 +91,6 @@ def lis_to_args(lis):
         return lis[0]
     else:
         return lis[0]+","+lis_to_args(lis[1:])
-
 def comp_lambda(ir):
     return "("+"("+lis_to_args(ir[1])+")"+"=>"+"("+lis_to_args(map(compilee,ir[2:]))+")"+")"
 def comp_application(ir):
@@ -100,9 +99,9 @@ def comp_definition(ir):
     def make_lambda(s,body):
         return ['lambda',s[1:]]+body
     if(type(ir[1])==str):
-        return "var "+ir[1]+"="+compilee(ir[2])+";"
+        return ir[1]+"="+compilee(ir[2])
     elif(type(ir[1])==list):
-        return "var "+ir[1][0]+"="+compilee(make_lambda(ir[1],ir[2:]))+";"
+        return ir[1][0]+"="+compilee(make_lambda(ir[1],ir[2:]))
 def comp_if(ir):
     return "("+compilee(ir[1])+")?"+compilee(ir[2])+":"+compilee(ir[3])
 def comp_cond(ir):
@@ -146,7 +145,19 @@ def compilee(ir):
     elif(is_application(ir)):
         return comp_application(ir)
 def compiler(exp):
-    return compilee(parser(token(exp)))    
+    return compilee(parser(token(exp)))
+def compilers(exps):
+    if len(exps)==0:
+        pass
+    elif exps[0]==' ':
+        return compilers(exps[1:])
+    elif exps[0]=='(':
+        i=findp(exps,0)
+        firstexp=exps[0:i]
+        restexps=exps[i+1:]
+        print compilers(parser(token(firstexp)))
+        return compilers(restexps)
+    
 print "var add=function(x,y){return x+y;};"
 print "var sub=function(x,y){return x-y;};"
 print "var mul=function(x,y){return x*y;};"
@@ -166,3 +177,4 @@ print compiler("(define (tas das x y) (das x y)) ")
 print compiler("(tas add 1 1)")
 print compiler("((lambda (x y) (set! x (add x 1)) (add x y)) 1 1)")
 print compiler("(define (tas x y) (set! x (add x 1)) (add x y))")
+print compiler("(define (has x) (define (das x) (add x 1)) (das x))")
