@@ -11,6 +11,12 @@ philosoherstone='https://zh.wikipedia.org/wiki/%E8%B3%A2%E8%80%85%E4%B9%8B%E7%9F
 chemhistory='https://zh.wikipedia.org/wiki/%E4%BC%A0%E8%AF%B4'
 lengend='https://zh.wikipedia.org/wiki/%E4%BC%A0%E8%AF%B4'
 epic='https://zh.wikipedia.org/wiki/%E5%8F%B2%E8%AF%97'
+chemicalelem='https://zh.wikipedia.org/wiki/%E5%8C%96%E5%AD%B8%E5%85%83%E7%B4%A0'
+metal='https://zh.wikipedia.org/wiki/%E9%87%91%E5%B1%9E'
+background='https://zh.wikipedia.org/wiki/%E8%83%8C%E6%99%AF'
+xushishi='https://zh.wikipedia.org/wiki/%E5%8F%99%E4%BA%8B%E8%AF%97'
+glass='https://zh.wikipedia.org/wiki/%E7%8E%BB%E7%92%83'
+xilawen='https://zh.wikipedia.org/wiki/%E5%B8%8C%E8%85%8A%E8%AF%AD'
 proxies = {
     'https': 'https://127.0.0.1:1080',
     'http': 'http://127.0.0.1:1080'
@@ -27,7 +33,7 @@ def get_all_links_inside_wiki(node):
     for a in bsobj.find_all('a'):
         link_url=a.get("href")
         if type(link_url)==str:
-            if link_url.startswith("/wiki/") and link_url!=node.url:
+            if link_url.startswith("/wiki/") and "https://zh.wikipedia.org"+link_url!=node.url:
                 if not link_url.startswith('/wiki/Special'):
                     if not link_url.startswith('/wiki/Wikipedia'):
                         if not link_url.startswith('/wiki/Project'):
@@ -42,11 +48,14 @@ def get_all_links_inside_wiki(node):
 
 def print_path(node,begin_url):
     now=node
-    while node.father_node!=None:
+    while now.father_node!=None:
         if now.url==begin_url:
+            print(now.url)
             return
-        print('<-'+node.url)
-        now=node.father_node
+        else:
+            print(now.url)
+            now=now.father_node
+    print(begin_url)
 
 def bfs_a_path_between_two_node(begin_node,end_node):
     visited=[]
@@ -60,10 +69,10 @@ def bfs_a_path_between_two_node(begin_node,end_node):
         else:
             links=get_all_links_inside_wiki(now_node)
             for link in links:
-                if [l for l in visited if l.url==link.url]!=[]:
-                    pass
-                else:
-                    if link.url!=now_node.url and link.url==end_node.url:
+                if [l for l in visited if l.url==link.url]!=[] or link.url==now_node.url:
+                    continue
+                elif link.url!=now_node.url and link!=now_node:
+                    if link.url==end_node.url:
                         link.father_node=now_node
                         print_path(link,begin_node.url)
                         return
@@ -80,5 +89,5 @@ def bfs_a_path_between_two_node(begin_node,end_node):
     print(link.url) """
 
 if __name__=="__main__":
-    bfs_a_path_between_two_node(Node(philosoherstone,None),Node(epic,None))
+    bfs_a_path_between_two_node(Node(philosoherstone,None),Node(xilawen,None))
     pass
